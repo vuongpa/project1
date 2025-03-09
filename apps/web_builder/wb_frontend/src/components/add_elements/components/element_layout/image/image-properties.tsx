@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 
 export const getImagePropertiesDefaults = () => ({
     src: "https://via.placeholder.com/300x200",
@@ -19,4 +20,6 @@ export  interface ImagePropertiesDefaults {
     margin: string;
     border: string;
     backgroundColor: string;
-  }
+    children?: ReactNode;
+    }
+  

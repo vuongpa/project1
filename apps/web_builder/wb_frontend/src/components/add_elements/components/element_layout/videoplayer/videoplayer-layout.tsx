@@ -4,9 +4,7 @@ import { getVideoPlayerPropertiesDefaults } from "./videoplayer-properties";
 import { DeleteContextMenu } from "../../../delete_context_menu/delete-context-menu";
 import { VideoPlayerProperties } from "./properties-videoplayer-pannel";
 
-interface VideoPlayerProps extends Partial<ReturnType<typeof getVideoPlayerPropertiesDefaults>> {
-  isYouTube?: boolean; 
-}
+interface VideoPlayerProps extends Partial<ReturnType<typeof getVideoPlayerPropertiesDefaults>> {}
 
 export const VideoPlayerLayout: React.FC<VideoPlayerProps> & { craft: any } = (props) => {
   const {
@@ -31,10 +29,15 @@ export const VideoPlayerLayout: React.FC<VideoPlayerProps> & { craft: any } = (p
     autoplay = defaultProps.autoplay,
     loop = defaultProps.loop,
     muted = defaultProps.muted,
+    poster = defaultProps.poster,
+    playbackRate = defaultProps.playbackRate,
     padding = defaultProps.padding,
     margin = defaultProps.margin,
     backgroundColor = defaultProps.backgroundColor,
     border = defaultProps.border,
+    start = defaultProps.start,
+    end = defaultProps.end,
+    showRelated = defaultProps.showRelated,
   } = props;
 
   const videoStyle = {
@@ -44,17 +47,19 @@ export const VideoPlayerLayout: React.FC<VideoPlayerProps> & { craft: any } = (p
     margin,
     backgroundColor,
     border,
-    outline: selected ? "2px solid gray" : "none",
+    outline: selected ? "2px solid #3b82f6" : "none",
     display: "block",
-    boxSizing: "border-box",
+    boxSizing: "border-box" as const,
+    transition: "outline 0.2s ease",
   };
 
-  const isYouTube = src.includes("youtube.com/embed") || src.includes("youtu.be"); // Kiểm tra nếu URL là YouTube
+  const isYouTube = src.includes("youtube.com/embed") || src.includes("youtu.be");
+  const youTubeParams = `?start=${start}${end ? `&end=${end}` : ""}${showRelated ? "" : "&rel=0"}&autoplay=${autoplay ? 1 : 0}`;
+  const youTubeSrc = isYouTube ? `${src}${youTubeParams}` : src;
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     actions.selectNode(id);
-    console.log("VideoPlayerLayout selected:", id, "Selected state:", selected);
   };
 
   const handleContextMenu = (event: React.MouseEvent) => {
@@ -77,9 +82,9 @@ export const VideoPlayerLayout: React.FC<VideoPlayerProps> & { craft: any } = (p
     >
       {isYouTube ? (
         <iframe
-          src={src}
-          width={parseInt(width) || 640}
-          height={parseInt(height) || 360} 
+          src={youTubeSrc}
+          width={width}
+          height={height}
           title="YouTube video player"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -90,12 +95,14 @@ export const VideoPlayerLayout: React.FC<VideoPlayerProps> & { craft: any } = (p
       ) : (
         <video
           src={src}
-          width={parseInt(width) || 640}
-          height={parseInt(height) || 360}
+          width={width}
+          height={height}
           controls={controls}
           autoPlay={autoplay}
           loop={loop}
           muted={muted}
+          poster={poster}
+          playbackRate={playbackRate}
           onClick={handleClick}
           style={videoStyle}
         />
@@ -104,9 +111,7 @@ export const VideoPlayerLayout: React.FC<VideoPlayerProps> & { craft: any } = (p
         nodeId={id}
         onClose={handleCloseContextMenu}
         position={contextMenu}
-        onDelete={() => {
-          actions.delete(id);
-        }}
+        onDelete={() => actions.delete(id)}
       />
     </div>
   );
@@ -116,11 +121,10 @@ VideoPlayerLayout.craft = {
   displayName: "VideoPlayerLayout",
   props: getVideoPlayerPropertiesDefaults(),
   rules: {
-    canDrag: () => true, 
-    canDrop: () => true ,
+    canDrag: () => true,
+    canDrop: () => true,
   },
   related: {
-    toolbar: VideoPlayerProperties, 
+    toolbar: VideoPlayerProperties,
   },
 };
-

@@ -9,4 +9,5 @@ export * from './register_user';
 export * from './search_bar';
 export * from './share_modal';
 export * from './sidebar';
+export * from './view_project';
 export *from './add_elements';

@@ -25,8 +25,8 @@ import {
   AddElementPage,
   CreateProjectPage,
   UserProfilePage,
+ ViewProjectPage
 } from '../pages';
-import { ListTemplatesPage } from '../pages/list_templates';
 
 // Khởi tạo QueryClient
 const queryClient = new QueryClient();
@@ -67,10 +67,7 @@ const router = createBrowserRouter([
         path: 'projects',
         element: <ListProjectsPage />,
       },
-      {
-        path: 'templates',
-        element: <ListTemplatesPage/>,
-      },
+  
       {
         path: 'create-new-project',
         element: <CreateProjectPage />,
@@ -87,6 +84,11 @@ const router = createBrowserRouter([
         path: 'profile/:userId',
         element: <UserProfilePage />
       },
+      {
+        path: 'projects/view/:alias',
+        element: <ViewProjectPage/>
+      },
+
       {
         path: '*',
         element: <PageNotFound />,

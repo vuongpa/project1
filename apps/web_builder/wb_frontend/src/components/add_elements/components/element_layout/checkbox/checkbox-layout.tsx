@@ -26,12 +26,15 @@ export const CheckboxLayout: React.FC<CheckboxProps> & { craft: any } = (props) 
     value = defaultProps.value,
     name = defaultProps.name,
     checked = defaultProps.checked,
+    disabled = defaultProps.disabled,
     color = defaultProps.color,
     fontSize = defaultProps.fontSize,
     padding = defaultProps.padding,
     margin = defaultProps.margin,
     backgroundColor = defaultProps.backgroundColor,
     border = defaultProps.border,
+    hoverBackgroundColor = defaultProps.hoverBackgroundColor,
+    checkedBackgroundColor = defaultProps.checkedBackgroundColor,
   } = props;
 
   const checkboxStyle = {
@@ -39,30 +42,33 @@ export const CheckboxLayout: React.FC<CheckboxProps> & { craft: any } = (props) 
     alignItems: "center",
     padding,
     margin,
-    backgroundColor,
+    backgroundColor: checked ? checkedBackgroundColor : isHovered ? hoverBackgroundColor : backgroundColor,
     border,
-    outline: selected ? "2px solid gray" : "none",
-    cursor: "move", 
-    boxSizing: "border-box",
+    outline: selected ? "2px solid #3b82f6" : "none",
+    cursor: disabled ? "not-allowed" : "move",
+    boxSizing: "border-box" as const,
+    transition: "background-color 0.2s ease",
+    opacity: disabled ? 0.5 : 1,
   };
 
   const labelStyle = {
     color,
     fontSize,
-    marginLeft: "8px", 
-    userSelect: "none",
+    marginLeft: "8px",
+    userSelect: "none" as const,
   };
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    actions.selectNode(id);
-    console.log("CheckboxLayout selected:", id, "Selected state:", selected);
+    if (!disabled) actions.selectNode(id);
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    actions.setProp((prop: CheckboxProps) => {
-      prop.checked = e.target.checked;
-    }, id);
+    if (!disabled) {
+      actions.setProp((prop: CheckboxProps) => {
+        prop.checked = e.target.checked;
+      }, id);
+    }
   };
 
   const handleContextMenu = (event: React.MouseEvent) => {
@@ -89,8 +95,9 @@ export const CheckboxLayout: React.FC<CheckboxProps> & { craft: any } = (props) 
           name={name}
           value={value}
           checked={checked}
+          disabled={disabled}
           onChange={handleChange}
-          style={{ cursor: "pointer" }}
+          style={{ cursor: disabled ? "not-allowed" : "pointer" }}
         />
         <label style={labelStyle}>{label}</label>
       </div>
@@ -98,9 +105,7 @@ export const CheckboxLayout: React.FC<CheckboxProps> & { craft: any } = (props) 
         nodeId={id}
         onClose={handleCloseContextMenu}
         position={contextMenu}
-        onDelete={() => {
-          actions.delete(id);
-        }}
+        onDelete={() => actions.delete(id)}
       />
     </div>
   );
@@ -111,7 +116,7 @@ CheckboxLayout.craft = {
   props: getCheckboxPropertiesDefaults(),
   rules: {
     canDrag: () => true,
-    canDrop: () => true ,
+    canDrop: () => true,
   },
   related: {
     toolbar: CheckboxProperties,

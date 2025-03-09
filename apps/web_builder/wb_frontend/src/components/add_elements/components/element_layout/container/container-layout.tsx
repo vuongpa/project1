@@ -42,6 +42,9 @@ export const ContainerLayout = (props: Partial<DefaultContainerProperties>) => {
     overflow,
     opacity,
     children,
+    borderWidth,
+    borderColor,
+    borderStyle,
   } = props;
 
   const handleClick = (e: React.MouseEvent) => {
@@ -81,11 +84,20 @@ export const ContainerLayout = (props: Partial<DefaultContainerProperties>) => {
         alignItems,
         background: backgroundColor,
         color: textColor,
-        padding: `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`,
-        margin: `${marginTop}px ${marginRight}px ${marginBottom}px ${marginLeft}px`,
+        paddingTop,
+        paddingBottom,
+        paddingLeft,
+        paddingRight,
+        marginBottom,
+        marginLeft,
+        marginRight,
+        marginTop,
         boxShadow,
         borderRadius,
         flex: fillSpace === 'yes' ? 1 : 'unset',
+        borderWidth,
+        borderColor,
+        borderStyle,
       }}>
       {children}
       <DeleteContextMenu nodeId={id} onClose={handleCloseContextMenu} position={contextMenu} onDelete={() => {}} />

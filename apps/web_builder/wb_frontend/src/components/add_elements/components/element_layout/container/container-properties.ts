@@ -6,7 +6,7 @@ export interface DefaultContainerProperties {
   borderColor: string;
   borderWidth: string;
   borderRadius: string;
-  borderStyle: "solid" | "dashed" | "dotted" | "none"; // Thêm borderStyle
+  borderStyle: "solid" | "dashed" | "dotted" | "none"; 
   paddingTop: string | number;
   paddingBottom: string | number;
   paddingLeft: string | number;

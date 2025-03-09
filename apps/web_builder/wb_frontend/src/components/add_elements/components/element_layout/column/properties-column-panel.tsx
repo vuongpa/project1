@@ -9,32 +9,38 @@ import {
   Typography,
   InputAdornment,
   Slider,
+  Switch,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { GridPropertiesDefaults } from "./properties-grid";
+import { ColumnPropertiesDefaults } from "./properties-column";
 
-interface GridPropertiesProps {
-  properties: GridPropertiesDefaults;
-  onPropertyChange: (newProperties: Partial<GridPropertiesDefaults>) => void;
+interface ColumnPropertiesProps {
+  properties: ColumnPropertiesDefaults;
+  onPropertyChange: (newProperties: Partial<ColumnPropertiesDefaults>) => void;
   size?: "small";
 }
 
-export const GridProperties: React.FC<GridPropertiesProps> = ({
+export const ColumnProperties: React.FC<ColumnPropertiesProps> = ({
   properties,
   onPropertyChange,
   size = "small",
 }) => {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [isHeightAuto, setIsHeightAuto] = useState(properties.height === "auto");
 
-  const handleChange = <K extends keyof GridPropertiesDefaults>(
+  const handleChange = <K extends keyof ColumnPropertiesDefaults>(
     key: K,
-    value: GridPropertiesDefaults[K]
+    value: ColumnPropertiesDefaults[K]
   ) => {
     onPropertyChange({ [key]: value });
   };
 
   const parsePxValue = (value: string) => {
     return parseInt(value.replace("px", ""), 10) || 0;
+  };
+
+  const appendPxIfNumeric = (value: string) => {
+    return /^\d+$/.test(value) ? `${value}px` : value;
   };
 
   const inputStyle = {
@@ -49,14 +55,11 @@ export const GridProperties: React.FC<GridPropertiesProps> = ({
   };
 
   const sections = [
-    { id: "layout", label: "Layout", details: ["columns", "rows", "gap"] },
+    { id: "layout", label: "Layout", details: ["columnCount"] },
+    { id: "size", label: "Size", details: ["width", "height"] },
     { id: "spacing", label: "Spacing", details: ["padding", "margin"] },
     { id: "appearance", label: "Appearance", details: ["backgroundColor", "border"] },
   ];
-
-  function appendPxIfNumeric(value: string): string {
-    throw new Error("Function not implemented.");
-  }
 
   return (
     <Paper
@@ -68,7 +71,7 @@ export const GridProperties: React.FC<GridPropertiesProps> = ({
         gutterBottom
         sx={{ borderBottom: "1px solid #424242", pb: 0.5, fontSize: "12px" }}
       >
-        Grid Properties
+        Column Properties
       </Typography>
       <Box sx={{ mt: 0.5 }}>
         {sections.map((section) => (
@@ -84,52 +87,74 @@ export const GridProperties: React.FC<GridPropertiesProps> = ({
               </Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ bgcolor: "#1f2937", p: 0.5 }}>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                 {/* Layout Section */}
-                {section.details.includes("columns") && (
+                {section.details.includes("columnCount") && (
                   <Box display="flex" alignItems="center" gap={0.5}>
                     <Typography variant="caption" sx={{ minWidth: 80, color: "white", fontSize: "10px" }}>
                       Columns
                     </Typography>
                     <Slider
-                      value={properties.columns}
-                      onChange={(_, value) => handleChange("columns", value as number)}
+                      value={properties.columnCount}
+                      onChange={(_, value) => handleChange("columnCount", value as number)}
                       min={1}
-                      max={12}
+                      max={12} // Tối đa 12 cột, tương tự Webflow
                       step={1}
                       valueLabelDisplay="auto"
                       sx={{ color: "white", width: "120px" }}
                     />
                   </Box>
                 )}
-                {section.details.includes("rows") && (
+
+                {/* Size Section */}
+                {section.details.includes("width") && (
                   <Box display="flex" alignItems="center" gap={0.5}>
                     <Typography variant="caption" sx={{ minWidth: 80, color: "white", fontSize: "10px" }}>
-                      Rows
+                      Width
                     </Typography>
                     <Slider
-                      value={properties.rows}
-                      onChange={(_, value) => handleChange("rows", value as number)}
-                      min={1}
-                      max={12}
+                      value={parsePxValue(properties.width)}
+                      onChange={(_, value) => handleChange("width", `${value}px`)}
+                      min={50}
+                      max={500}
                       step={1}
                       valueLabelDisplay="auto"
                       sx={{ color: "white", width: "120px" }}
                     />
                   </Box>
                 )}
-                {section.details.includes("gap") && (
-                  <Box display="flex" alignItems="center" gap={0.5}>
-                    <Typography variant="caption" sx={{ minWidth: 80, color: "white", fontSize: "10px" }}>
-                      Gap
-                    </Typography>
-                    <TextField
-                      value={properties.gap}
-                      onChange={(e) => handleChange("gap", appendPxIfNumeric(e.target.value))}
-                      variant="standard"
-                      size={size}
-                      sx={inputStyle}
-                    />
+                {section.details.includes("height") && (
+                  <Box display="flex" flexDirection="column" gap={0.5}>
+                    <Box display="flex" alignItems="center" gap={0.5}>
+                      <Typography variant="caption" sx={{ minWidth: 80, color: "white", fontSize: "10px" }}>
+                        Height Auto
+                      </Typography>
+                      <Switch
+                        checked={isHeightAuto}
+                        onChange={(e) => {
+                          setIsHeightAuto(e.target.checked);
+                          handleChange("height", e.target.checked ? "auto" : "100px");
+                        }}
+                        size="small"
+                        sx={{ "& .MuiSwitch-switchBase.Mui-checked": { color: "white" } }}
+                      />
+                    </Box>
+                    {!isHeightAuto && (
+                      <Box display="flex" alignItems="center" gap={0.5}>
+                        <Typography variant="caption" sx={{ minWidth: 80, color: "white", fontSize: "10px" }}>
+                          Height
+                        </Typography>
+                        <Slider
+                          value={parsePxValue(properties.height)}
+                          onChange={(_, value) => handleChange("height", `${value}px`)}
+                          min={50}
+                          max={500}
+                          step={1}
+                          valueLabelDisplay="auto"
+                          sx={{ color: "white", width: "120px" }}
+                        />
+                      </Box>
+                    )}
                   </Box>
                 )}
 
@@ -156,7 +181,7 @@ export const GridProperties: React.FC<GridPropertiesProps> = ({
                       Margin
                     </Typography>
                     <Slider
-                      value={parsePxValue(properties.margin)}
+                      value={parsePxValue(properties.padding)}
                       onChange={(_, value) => handleChange("margin", `${value}px`)}
                       min={0}
                       max={100}

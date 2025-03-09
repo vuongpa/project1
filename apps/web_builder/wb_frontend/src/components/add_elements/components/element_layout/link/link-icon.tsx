@@ -12,7 +12,7 @@ export const LinkIcon: React.FC = () => {
   return (
     <div
       className="flex flex-col items-center gap-2 p-1  cursor-pointer"
-      ref={(ref) => { if (ref) connectors.create(ref, <LinkLayout text="hihi"/>); }}
+      ref={(ref) => { if (ref) connectors.create(ref, <LinkLayout text="day la link"/>); }}
     >
       <img src={containerData.iconUrl} alt={containerData.name} className="w-6 h-6" />
       <span className="text-xs font-medium">{containerData.name}</span>

@@ -1,7 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { ProjectEntity } from './project.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import { ProjectEntity } from "./project.entity";
 
-@Entity({ name: 'pages' })
+@Entity({ name: "pages" })
 export class PageEntity {
   @PrimaryGeneratedColumn()
   id!: number;
@@ -12,13 +12,13 @@ export class PageEntity {
   @Column()
   title!: string;
 
-  @Column('text')
+  @Column("text", { default: "" })
   metaTags!: string;
 
-  @Column('json')
-  sections!: object;
+  @Column("text")
+  sections!: string;
 
-  @ManyToOne(() => ProjectEntity, (project) => project.pages, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'project_id' })
+  @ManyToOne(() => ProjectEntity, (project) => project.pages, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "project_id" })
   project!: ProjectEntity;
 }

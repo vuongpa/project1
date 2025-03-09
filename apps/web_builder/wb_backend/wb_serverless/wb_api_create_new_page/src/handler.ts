@@ -12,7 +12,6 @@ const schema = yup.object().shape({
     .matches(/^[a-z0-9-_]+$/, "Alias should be lowercase and hyphen-separated"),
   title: yup.string().optional(),
   metaTags: yup.string().optional(),
-  sections: yup.array().optional(),
 });
 
 export const createPage: APIGatewayProxyHandler = async (event) => {
@@ -122,9 +121,9 @@ export const createPage: APIGatewayProxyHandler = async (event) => {
     page.urlAlias = body.urlAlias;
     page.title = body.title;
     page.metaTags = body.metaTags;
-    page.sections = body.sections;
+    page.sections = typeof body.sections === "string" ? body.sections : JSON.stringify(body.sections); 
     page.project = project;
-    console.log('New Page Entity:', page);
+    
 
     await appDataSource.manager.save(page);
     console.log('Page saved successfully with ID:', page.id);

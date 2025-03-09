@@ -1,4 +1,4 @@
-import { ButtonGroup, Box, Button, Select, MenuItem, TextField, Divider, InputLabel, FormControl } from "@mui/material";
+import React from "react";
 import { useEditor } from "@craftjs/core";
 import { ContainerProperties } from "../element_layout/container/properties-container-panel";
 import { ContainerLayout } from "../element_layout/container/container-layout";
@@ -13,7 +13,7 @@ import { ButtonLayout } from "../element_layout/button/button-layout";
 import { ButtonProperties } from "../element_layout/button/button-properties-panel";
 import { ButtonPropertiesDefaults } from "../element_layout/button/button-properties";
 import { LinkProperties } from "../element_layout/link/properties-link-panel";
-import { ImageLayout, LinkLayout, ListLayout, RadioLayout, RowLayout, TabsLayout, VideoPlayerLayout } from "../element_layout";
+import { ColumnLayout, ImageLayout, LinkLayout, ListLayout, RadioLayout, RowLayout, TabsLayout, VideoPlayerLayout } from "../element_layout";
 import { LinkPropertiesDefaults } from "../element_layout/link/link-properties";
 import { GridLayout } from "../element_layout/grid/grid-layout";
 import { GridProperties } from "../element_layout/grid/properties-grid-panel";
@@ -33,25 +33,31 @@ import { VideoPlayerProperties } from "../element_layout/videoplayer/properties-
 import { VideoPlayerPropertiesDefaults } from "../element_layout/videoplayer/videoplayer-properties";
 import { RowProperties } from "../element_layout/row/properties-row-panel";
 import { RowPropertiesDefaults } from "../element_layout/row/row-properties";
+import { Box, Button, Select, MenuItem, TextField, Divider, InputLabel, FormControl, Typography, Chip, Tooltip, IconButton } from "@mui/material";
+import { alpha } from "@mui/material/styles";
+import LayersIcon from "@mui/icons-material/Layers";
+import SettingsIcon from "@mui/icons-material/Settings";
+import BrushIcon from "@mui/icons-material/Brush";
+import TouchAppIcon from "@mui/icons-material/TouchApp";
 
 export const RightSidebar: React.FC = () => {
-
-  const { selectedNode, actions} = useEditor((state) => {
+  const { selectedNode, actions } = useEditor((state) => {
     const selectedId = state.events.selected.size > 0 ? state.events.selected.values().next().value : null;
     return {
       selectedNode: selectedId ? state.nodes[selectedId] : null,
     };
   });
+
   const handlePropertyChange = (
     newProperties: Partial<
-      DefaultContainerProperties | TextDefaultProperties | HeadingPropertiesDefaults | ButtonPropertiesDefaults | RowPropertiesDefaults // Thêm RowPropertiesDefaults
+      DefaultContainerProperties | TextDefaultProperties | HeadingPropertiesDefaults | ButtonPropertiesDefaults | RowPropertiesDefaults
     >
   ) => {
     if (selectedNode) {
       actions.setProp(selectedNode.id, (props: any) => {
         const filteredProps = {};
         Object.keys(newProperties).forEach((key) => {
-          if (key in (props as any)) {
+          if (key in props) {
             (filteredProps as any)[key] = (newProperties as any)[key];
           }
         });
@@ -61,99 +67,151 @@ export const RightSidebar: React.FC = () => {
   };
 
   return (
-    <Box className="p-3 w-[350px] h-screen bg-gray-900 text-white border-l border-gray-700 overflow-y-auto" sx={{ maxHeight: "calc(100vh - 64px)" }}>
-      <ButtonGroup className="mb-1" variant="outlined" aria-label="Basic button group">
-        <Button
-          size="small"
-          sx={{
-            fontSize: "10px",
-            padding: "2px 6px",
-            color: "white",
-            borderColor: "white",
-            "&:hover": {
-              backgroundColor: "#2a4365",
-              borderColor: "white"
-            }
-          }}
-        >
-          Style
-        </Button>
-        <Button
-          size="small"
-          sx={{
-            fontSize: "10px",
-            padding: "2px 6px",
-            color: "white",
-            borderColor: "white",
-            "&:hover": {
-              backgroundColor: "#2a4365",
-              borderColor: "white"
-            }
-          }}
-        >
-          Interactions
-        </Button>
-        <Button
-          size="small"
-          sx={{
-            fontSize: "10px",
-            padding: "2px 6px",
-            color: "white",
-            borderColor: "white",
-            "&:hover": {
-              backgroundColor: "#2a4365",
-              borderColor: "white"
-            }
-          }}
-        >
-          Inspector
-        </Button>
-      </ButtonGroup>
-      <Divider sx={{ bgcolor: "#444" }} />
-      <Box mt={0.5}>
+    <Box
+      className="p-3 w-[350px] h-screen bg-gradient-to-b from-slate-900 to-indigo-950 text-white border-l border-indigo-900/30 overflow-y-auto"
+      sx={{ maxHeight: "calc(100vh - 64px)" }}
+    >
+      {/* Header của RightSidebar */}
+      <Box sx={{ display: "flex", alignItems: "center", mb: 2, pb: 1, borderBottom: "1px solid rgba(99, 102, 241, 0.1)" }}>
+        <LayersIcon sx={{ color: "#6366f1", mr: 1 }} />
+        <Typography variant="subtitle1" sx={{ fontWeight: 600, letterSpacing: "0.01em" }}>
+          Properties
+        </Typography>
+      </Box>
+
+      {/* Tabs điều hướng (Style, Interactions, Inspector) */}
+      <Box sx={{ display: "flex", gap: 1, mb: 2, backgroundColor: alpha("#1e1e38", 0.5), p: 0.5, borderRadius: "6px" }}>
+        <Tooltip title="Style Settings" arrow placement="top">
+          <Button
+            size="small"
+            sx={{
+              flex: 1,
+              fontSize: "0.75rem",
+              padding: "4px 8px",
+              color: alpha("#ffffff", 0.85),
+              backgroundColor: alpha("#6366f1", 0.15),
+              borderRadius: "4px",
+              textTransform: "none",
+              "&:hover": {
+                backgroundColor: alpha("#6366f1", 0.25),
+                color: "#ffffff",
+              },
+            }}
+            startIcon={<BrushIcon sx={{ fontSize: "1rem" }} />}
+          >
+            Style
+          </Button>
+        </Tooltip>
+        <Tooltip title="Interaction Settings" arrow placement="top">
+          <Button
+            size="small"
+            sx={{
+              flex: 1,
+              fontSize: "0.75rem",
+              padding: "4px 8px",
+              color: alpha("#ffffff", 0.85),
+              backgroundColor: "transparent",
+              borderRadius: "4px",
+              textTransform: "none",
+              "&:hover": {
+                backgroundColor: alpha("#6366f1", 0.15),
+                color: "#ffffff",
+              },
+            }}
+            startIcon={<TouchAppIcon sx={{ fontSize: "1rem" }} />}
+          >
+            Interactions
+          </Button>
+        </Tooltip>
+        <Tooltip title="Inspector" arrow placement="top">
+          <Button
+            size="small"
+            sx={{
+              flex: 1,
+              fontSize: "0.75rem",
+              padding: "4px 8px",
+              color: alpha("#ffffff", 0.85),
+              backgroundColor: "transparent",
+              borderRadius: "4px",
+              textTransform: "none",
+              "&:hover": {
+                backgroundColor: alpha("#6366f1", 0.15),
+                color: "#ffffff",
+              },
+            }}
+            startIcon={<SettingsIcon sx={{ fontSize: "1rem" }} />}
+          >
+            Inspector
+          </Button>
+        </Tooltip>
+      </Box>
+
+      {/* Page Selector */}
+      <Box mb={2}>
         <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label" sx={{ fontSize: "12px", color: "white" }}>Page</InputLabel>
+          <InputLabel
+            id="demo-simple-select-label"
+            sx={{
+              fontSize: "0.85rem",
+              color: alpha("#ffffff", 0.7),
+              "&.Mui-focused": { color: "#6366f1" },
+            }}
+          >
+            Page
+          </InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             label="Page"
             size="small"
             sx={{
-              "& .MuiSelect-select": { color: "white", fontSize: "12px" },
-              "& .MuiInputLabel-root": { color: "white" },
-              "& .MuiInputLabel-root.Mui-focused": { color: "white" },
-              "& .MuiOutlinedInput-notchedOutline": { borderColor: "white" },
-
-
-              height: "48px",
+              "& .MuiSelect-select": { color: "#ffffff", fontSize: "0.85rem", py: 1 },
+              "& .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.3) },
+              "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.5) },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#6366f1" },
+              backgroundColor: alpha("#1e1e38", 0.5),
+              borderRadius: "6px",
+              "& .MuiSvgIcon-root": { color: alpha("#ffffff", 0.7) },
             }}
           >
-            <MenuItem sx={{ fontSize: "12px", py: 0.5, px: 0.75 }}>Login</MenuItem>
-            <MenuItem sx={{ fontSize: "12px", py: 0.5, px: 0.75 }}>HomePage</MenuItem>
-            <MenuItem sx={{ fontSize: "12px", py: 0.5, px: 0.75 }}>Settings</MenuItem>
+            <MenuItem sx={{ fontSize: "0.85rem", py: 0.5, px: 1 }} value="Login">
+              Login
+            </MenuItem>
+            <MenuItem sx={{ fontSize: "0.85rem", py: 0.5, px: 1 }} value="HomePage">
+              HomePage
+            </MenuItem>
+            <MenuItem sx={{ fontSize: "0.85rem", py: 0.5, px: 1 }} value="Settings">
+              Settings
+            </MenuItem>
           </Select>
         </FormControl>
       </Box>
-      <Divider sx={{ bgcolor: "#444", my: 2 }} />
-      <div className="flex gap-2 items-center">
+
+      <Divider sx={{ bgcolor: alpha("#6366f1", 0.3), my: 2 }} />
+
+      {/* Width và Height */}
+      <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
         <TextField
           id="standard-number"
           label="Width"
           type="number"
           value={100}
-          variant="standard"
+          variant="outlined"
+          size="small"
+          sx={{
+            "& .MuiInputBase-input": { color: "#ffffff", fontSize: "0.85rem" },
+            "& .MuiInputLabel-root": { color: alpha("#ffffff", 0.7), fontSize: "0.85rem" },
+            "& .MuiInputLabel-root.Mui-focused": { color: "#6366f1" },
+            "& .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.3) },
+            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.5) },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#6366f1" },
+            backgroundColor: alpha("#1e1e38", 0.5),
+            borderRadius: "6px",
+          }}
           slotProps={{
             inputLabel: {
               shrink: true,
             },
-          }}
-          sx={{
-            "& .MuiInputBase-input": { color: "white" },
-            "& .MuiInputLabel-root": { color: "white" },
-            "& .MuiInputLabel-root.Mui-focused": { color: "white" },
-            "& .MuiInput-underline:before": { borderBottomColor: "white" },
-            "& .MuiInput-underline:after": { borderBottomColor: "white" },
-            "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottomColor: "white" },
           }}
         />
         <TextField
@@ -161,26 +219,43 @@ export const RightSidebar: React.FC = () => {
           label="Height"
           type="number"
           value={100}
-          variant="standard"
+          variant="outlined"
+          size="small"
+          sx={{
+            "& .MuiInputBase-input": { color: "#ffffff", fontSize: "0.85rem" },
+            "& .MuiInputLabel-root": { color: alpha("#ffffff", 0.7), fontSize: "0.85rem" },
+            "& .MuiInputLabel-root.Mui-focused": { color: "#6366f1" },
+            "& .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.3) },
+            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.5) },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#6366f1" },
+            backgroundColor: alpha("#1e1e38", 0.5),
+            borderRadius: "6px",
+          }}
           slotProps={{
             inputLabel: {
               shrink: true,
             },
           }}
-          sx={{
-            "& .MuiInputBase-input": { color: "white" },
-            "& .MuiInputLabel-root": { color: "white" },
-            "& .MuiInputLabel-root.Mui-focused": { color: "white" },
-            "& .MuiInput-underline:before": { borderBottomColor: "white" },
-            "& .MuiInput-underline:after": { borderBottomColor: "white" },
-            "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottomColor: "white" },
-          }}
         />
-      </div>
-      <Divider sx={{ bgcolor: "#444", my: 2 }} />
+      </Box>
 
-      {selectedNode && selectedNode.data && (
-        <Box mt={4} sx={{ overflowY: "auto", maxHeight: "calc(100vh - 400px)" }}>
+      <Divider sx={{ bgcolor: alpha("#6366f1", 0.3), my: 2 }} />
+
+      {/* Properties Panel */}
+      {selectedNode && selectedNode.data ? (
+        <Box sx={{ overflowY: "auto", maxHeight: "calc(100vh - 400px)" }}>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              color: alpha("#ffffff", 0.9),
+              fontWeight: 500,
+              mb: 1,
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+            }}
+          >
+          </Typography>
           {selectedNode.data.type === ContainerLayout && (
             <Box>
               <ContainerProperties
@@ -286,7 +361,27 @@ export const RightSidebar: React.FC = () => {
               />
             </Box>
           )}
+          {selectedNode.data.type === ColumnLayout && (
+            <Box>
+              <RowProperties
+                properties={selectedNode.data.props as RowPropertiesDefaults}
+                onPropertyChange={handlePropertyChange}
+              />
+            </Box>
+          )}
         </Box>
+      ) : (
+        <Typography
+          sx={{
+            color: alpha("#ffffff", 0.6),
+            py: 4,
+            textAlign: "center",
+            fontStyle: "italic",
+            fontSize: "0.85rem",
+          }}
+        >
+          Select a component to edit its properties
+        </Typography>
       )}
     </Box>
   );

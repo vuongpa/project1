@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { ActionLogEntity, PageEntity, ProjectEntity, UserEntity ,LayoutEntity} from './entities';
 
-// Cấu hình kết nối MySQL
 let appDataSource: DataSource;
 
 export const getAppDataSource = (options: Partial<{

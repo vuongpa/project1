@@ -8,7 +8,7 @@ interface JwtPayload {
   userId: number;
 }
 
-export const getPages: APIGatewayProxyHandler = async (event) => {
+export const getPagesWithProject: APIGatewayProxyHandler = async (event) => {
 
   loadEnvConfig();
 
@@ -44,7 +44,7 @@ export const getPages: APIGatewayProxyHandler = async (event) => {
     
     const project = await appDataSource.getRepository(ProjectEntity).findOne({
       where: { alias },
-      relations: ['pages'],
+      relations: ['pages'], // Lấy luôn cả danh sách pages
     });
 
     if (!project) {
@@ -57,16 +57,24 @@ export const getPages: APIGatewayProxyHandler = async (event) => {
     return {
       statusCode: 200,
       body: JSON.stringify({
-        message: "List of pages for the project",
-        pages: project.pages,
+        message: "Project details with list of pages",
+        project: {
+          id: project.id,
+          name: project.name,
+          alias: project.alias,
+          description: project.description,
+          createdAt: project.createdAt,
+          updatedAt: project.updatedAt,
+          pages: project.pages,
+        },
       }),
     };
   } catch (error: any) {
-    console.error("Error fetching pages:", error);
+    console.error("Error fetching project and pages:", error);
     return {
       statusCode: 500,
       body: JSON.stringify({
-        error: "Unable to fetch pages",
+        error: "Unable to fetch project data",
       }),
     };
   }

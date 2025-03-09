@@ -15,6 +15,8 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { DefaultContainerProperties } from "./container-properties";
+import { alpha } from "@mui/material/styles";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 interface ContainerPropertiesProps {
   properties: DefaultContainerProperties;
@@ -22,7 +24,11 @@ interface ContainerPropertiesProps {
   size?: "small";
 }
 
-export const ContainerProperties: React.FC<ContainerPropertiesProps> = ({ properties, onPropertyChange, size = "small" }) => {
+export const ContainerProperties: React.FC<ContainerPropertiesProps> = ({
+  properties,
+  onPropertyChange,
+  size = "small",
+}) => {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   const handleChange = (key: keyof DefaultContainerProperties, value: any) => {
@@ -39,74 +45,123 @@ export const ContainerProperties: React.FC<ContainerPropertiesProps> = ({ proper
   ];
 
   return (
-    <Paper elevation={1} sx={{ p: 1, bgcolor: "#111827", color: "white", maxHeight: "calc(100vh - 150px)", overflowY: "auto" }}>
-      <Typography variant="subtitle2" gutterBottom sx={{ borderBottom: "1px solid #424242", pb: 0.5, fontSize: "12px" }}>
-        Container Properties
-      </Typography>
+    <Paper
+      elevation={0}
+      sx={{
+        p: 1,
+        bgcolor: "transparent",
+        color: "white",
+        maxHeight: "calc(100vh - 150px)",
+        overflowY: "auto",
+        "&::-webkit-scrollbar": { display: "none" }, // Ẩn thanh cuộn
+        scrollbarWidth: "none", // Ẩn thanh cuộn trên Firefox
+      }}
+    >
+      {/* Header của ContainerProperties */}
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1, pb: 0.5, borderBottom: "1px solid rgba(99, 102, 241, 0.1)" }}>
+        <SettingsIcon sx={{ color: "#6366f1", fontSize: "1rem" }} />
+        <Typography variant="subtitle2" sx={{ fontWeight: 600, fontSize: "0.85rem", color: alpha("#ffffff", 0.9) }}>
+          Container Properties
+        </Typography>
+      </Box>
+
+      {/* Các section thuộc tính */}
       <Box sx={{ mt: 0.5 }}>
         {sections.map((section) => (
           <Accordion
             key={section.id}
             expanded={expandedSection === section.id}
             onChange={(_, expanded) => setExpandedSection(expanded ? section.id : null)}
-            sx={{ bgcolor: "#111827", color: "white", mb: 0.5 }}
+            sx={{
+              bgcolor: alpha("#1e1e38", 0.5),
+              color: "white",
+              mb: 0.5,
+              borderRadius: "6px",
+              "&:before": { display: "none" }, // Xóa viền mặc định của Accordion
+              boxShadow: "none",
+            }}
           >
-            <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: "white", fontSize: "16px" }} />}>
-              <Typography variant="caption" className="text-xs">{section.label}</Typography>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon sx={{ color: alpha("#ffffff", 0.7), fontSize: "1rem" }} />}
+              sx={{
+                "& .MuiAccordionSummary-content": { my: 0.5 },
+                "&:hover": {
+                  bgcolor: alpha("#6366f1", 0.15),
+                },
+                transition: "all 0.2s ease",
+              }}
+            >
+              <Typography variant="caption" sx={{ fontSize: "0.75rem", fontWeight: 500 }}>
+                {section.label}
+              </Typography>
             </AccordionSummary>
-            <AccordionDetails sx={{ bgcolor: "#1f2937", color: "white", p: 0.5 }}>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+            <AccordionDetails
+              sx={{
+                bgcolor: alpha("#1e1e38", 0.8),
+                color: "white",
+                p: 1,
+                borderRadius: "0 0 6px 6px",
+              }}
+            >
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                 {/* Dimensions */}
                 {section.details.includes("width") && (
-                  <Box display="flex" alignItems="center" gap={0.5}>
-                    <Typography variant="caption" sx={{ minWidth: 80, color: "white", fontSize: "10px" }}>Width</Typography>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Typography variant="caption" sx={{ minWidth: 80, color: alpha("#ffffff", 0.7), fontSize: "0.75rem" }}>
+                      Width
+                    </Typography>
                     <TextField
                       type="number"
                       value={parseInt(properties.width || "0", 10)}
                       onChange={(e) => handleChange("width", `${e.target.value}px`)}
-                      variant="standard"
+                      variant="outlined"
                       size={size}
                       sx={{
-                        "& .MuiInputBase-input": { color: "white", fontSize: "10px" },
-                        "& .MuiInputLabel-root": { color: "white", fontSize: "10px" },
-                        "& .MuiInputLabel-root.Mui-focused": { color: "white", fontSize: "10px" },
-                        "& .MuiInput-underline:before": { borderBottomColor: "white" },
-                        "& .MuiInput-underline:after": { borderBottomColor: "white" },
-                        "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottomColor: "white" },
-                        height: "24px",
+                        "& .MuiInputBase-input": { color: "#ffffff", fontSize: "0.75rem" },
+                        "& .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.3) },
+                        "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.5) },
+                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#6366f1" },
+                        backgroundColor: alpha("#1e1e38", 0.5),
+                        borderRadius: "4px",
+                        height: "32px",
                       }}
                     />
                   </Box>
                 )}
                 {section.details.includes("height") && (
-                  <Box display="flex" alignItems="center" gap={0.5}>
-                    <Typography variant="caption" sx={{ minWidth: 80, color: "white", fontSize: "10px" }}>Height</Typography>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Typography variant="caption" sx={{ minWidth: 80, color: alpha("#ffffff", 0.7), fontSize: "0.75rem" }}>
+                      Height
+                    </Typography>
                     <TextField
                       type="number"
                       value={parseInt(properties.height || "0", 10)}
                       onChange={(e) => handleChange("height", `${e.target.value}px`)}
-                      variant="standard"
+                      variant="outlined"
                       size={size}
                       sx={{
-                        "& .MuiInputBase-input": { color: "white", fontSize: "10px" },
-                        "& .MuiInputLabel-root": { color: "white", fontSize: "10px" },
-                        "& .MuiInputLabel-root.Mui-focused": { color: "white", fontSize: "10px" },
-                        "& .MuiInput-underline:before": { borderBottomColor: "white" },
-                        "& .MuiInput-underline:after": { borderBottomColor: "white" },
-                        "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottomColor: "white" },
-                        height: "24px",
+                        "& .MuiInputBase-input": { color: "#ffffff", fontSize: "0.75rem" },
+                        "& .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.3) },
+                        "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.5) },
+                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#6366f1" },
+                        backgroundColor: alpha("#1e1e38", 0.5),
+                        borderRadius: "4px",
+                        height: "32px",
                       }}
                     />
                   </Box>
                 )}
 
+                {/* Colors */}
                 {section.details.includes("backgroundColor") && (
-                  <Box display="flex" alignItems="center" gap={0.5}>
-                    <Typography variant="caption" sx={{ minWidth: 80, color: "white", fontSize: "10px" }}>Background</Typography>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Typography variant="caption" sx={{ minWidth: 80, color: alpha("#ffffff", 0.7), fontSize: "0.75rem" }}>
+                      Background
+                    </Typography>
                     <TextField
                       value={properties.backgroundColor || "#ffffff"}
                       onChange={(e) => handleChange("backgroundColor", e.target.value)}
-                      variant="standard"
+                      variant="outlined"
                       size={size}
                       InputProps={{
                         startAdornment: (
@@ -121,24 +176,26 @@ export const ContainerProperties: React.FC<ContainerPropertiesProps> = ({ proper
                         ),
                       }}
                       sx={{
-                        "& .MuiInputBase-input": { color: "white", fontSize: "10px" },
-                        "& .MuiInputLabel-root": { color: "white", fontSize: "10px" },
-                        "& .MuiInputLabel-root.Mui-focused": { color: "white", fontSize: "10px" },
-                        "& .MuiInput-underline:before": { borderBottomColor: "white" },
-                        "& .MuiInput-underline:after": { borderBottomColor: "white" },
-                        "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottomColor: "white" },
-                        height: "24px",
+                        "& .MuiInputBase-input": { color: "#ffffff", fontSize: "0.75rem" },
+                        "& .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.3) },
+                        "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.5) },
+                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#6366f1" },
+                        backgroundColor: alpha("#1e1e38", 0.5),
+                        borderRadius: "4px",
+                        height: "32px",
                       }}
                     />
                   </Box>
                 )}
                 {section.details.includes("textColor") && (
-                  <Box display="flex" alignItems="center" gap={0.5}>
-                    <Typography variant="caption" sx={{ minWidth: 80, color: "white", fontSize: "10px" }}>Text Color</Typography>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Typography variant="caption" sx={{ minWidth: 80, color: alpha("#ffffff", 0.7), fontSize: "0.75rem" }}>
+                      Text Color
+                    </Typography>
                     <TextField
                       value={properties.textColor || "#000000"}
                       onChange={(e) => handleChange("textColor", e.target.value)}
-                      variant="standard"
+                      variant="outlined"
                       size={size}
                       InputProps={{
                         startAdornment: (
@@ -153,20 +210,22 @@ export const ContainerProperties: React.FC<ContainerPropertiesProps> = ({ proper
                         ),
                       }}
                       sx={{
-                        "& .MuiInputBase-input": { color: "white", fontSize: "10px" },
-                        "& .MuiInputLabel-root": { color: "white", fontSize: "10px" },
-                        "& .MuiInputLabel-root.Mui-focused": { color: "white", fontSize: "10px" },
-                        "& .MuiInput-underline:before": { borderBottomColor: "white" },
-                        "& .MuiInput-underline:after": { borderBottomColor: "white" },
-                        "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottomColor: "white" },
-                        height: "24px",
+                        "& .MuiInputBase-input": { color: "#ffffff", fontSize: "0.75rem" },
+                        "& .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.3) },
+                        "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.5) },
+                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#6366f1" },
+                        backgroundColor: alpha("#1e1e38", 0.5),
+                        borderRadius: "4px",
+                        height: "32px",
                       }}
                     />
                   </Box>
                 )}
                 {section.details.includes("opacity") && (
-                  <Box display="flex" alignItems="center" gap={0.5}>
-                    <Typography variant="caption" sx={{ minWidth: 80, color: "white", fontSize: "10px" }}>Opacity</Typography>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Typography variant="caption" sx={{ minWidth: 80, color: alpha("#ffffff", 0.7), fontSize: "0.75rem" }}>
+                      Opacity
+                    </Typography>
                     <Slider
                       value={properties.opacity || 1}
                       onChange={(_, value) => handleChange("opacity", value as number)}
@@ -176,11 +235,11 @@ export const ContainerProperties: React.FC<ContainerPropertiesProps> = ({ proper
                       valueLabelDisplay="auto"
                       size={size}
                       sx={{
-                        color: "white",
-                        "& .MuiSlider-thumb": { bgcolor: "white", width: 12, height: 12 },
-                        "& .MuiSlider-track": { bgcolor: "white", height: 4 },
-                        "& .MuiSlider-rail": { bgcolor: "#4a5568", height: 4 }, // gray-700
-                        "& .MuiSlider-valueLabel": { fontSize: "10px" },
+                        color: "#6366f1",
+                        "& .MuiSlider-thumb": { bgcolor: "#6366f1", width: 10, height: 10 },
+                        "& .MuiSlider-track": { bgcolor: "#6366f1", height: 3 },
+                        "& .MuiSlider-rail": { bgcolor: alpha("#6366f1", 0.3), height: 3 },
+                        "& .MuiSlider-valueLabel": { fontSize: "0.75rem", bgcolor: alpha("#1e1e38", 0.9) },
                         width: 150,
                       }}
                     />
@@ -190,13 +249,17 @@ export const ContainerProperties: React.FC<ContainerPropertiesProps> = ({ proper
                 {/* Margin */}
                 {section.details.includes("marginTop") && (
                   <Box>
-                    <Typography variant="caption" sx={{ color: "white", fontSize: "10px", mb: 0.25 }}>Margin</Typography>
+                    <Typography variant="caption" sx={{ color: alpha("#ffffff", 0.7), fontSize: "0.75rem", mb: 0.5 }}>
+                      Margin
+                    </Typography>
                     <Box sx={{ display: "flex", gap: 0.5, mt: 0.25 }}>
                       {["Top", "Right", "Bottom", "Left"].map((pos) => {
                         const key = `margin${pos}` as keyof DefaultContainerProperties;
                         return (
                           <Box key={pos} sx={{ width: "25%" }}>
-                            <Typography variant="caption" sx={{ fontSize: "10px", color: "white" }}>{pos}</Typography>
+                            <Typography variant="caption" sx={{ fontSize: "0.75rem", color: alpha("#ffffff", 0.7) }}>
+                              {pos}
+                            </Typography>
                             <Slider
                               value={parseInt(String(properties[key] || "0px").replace("px", ""), 10) || 0}
                               onChange={(_, value) => handleChange(key, `${value}px`)}
@@ -205,11 +268,11 @@ export const ContainerProperties: React.FC<ContainerPropertiesProps> = ({ proper
                               valueLabelDisplay="auto"
                               size={size}
                               sx={{
-                                color: "white",
-                                "& .MuiSlider-thumb": { bgcolor: "white", width: 12, height: 12 },
-                                "& .MuiSlider-track": { bgcolor: "white", height: 4 },
-                                "& .MuiSlider-rail": { bgcolor: "#4a5568", height: 4 }, // gray-700
-                                "& .MuiSlider-valueLabel": { fontSize: "10px" },
+                                color: "#6366f1",
+                                "& .MuiSlider-thumb": { bgcolor: "#6366f1", width: 10, height: 10 },
+                                "& .MuiSlider-track": { bgcolor: "#6366f1", height: 3 },
+                                "& .MuiSlider-rail": { bgcolor: alpha("#6366f1", 0.3), height: 3 },
+                                "& .MuiSlider-valueLabel": { fontSize: "0.75rem", bgcolor: alpha("#1e1e38", 0.9) },
                               }}
                             />
                           </Box>
@@ -222,13 +285,17 @@ export const ContainerProperties: React.FC<ContainerPropertiesProps> = ({ proper
                 {/* Padding */}
                 {section.details.includes("paddingTop") && (
                   <Box>
-                    <Typography variant="caption" sx={{ color: "white", fontSize: "10px", mb: 0.25 }}>Padding</Typography>
+                    <Typography variant="caption" sx={{ color: alpha("#ffffff", 0.7), fontSize: "0.75rem", mb: 0.5 }}>
+                      Padding
+                    </Typography>
                     <Box sx={{ display: "flex", gap: 0.5, mt: 0.25 }}>
                       {["Top", "Right", "Bottom", "Left"].map((pos) => {
                         const key = `padding${pos}` as keyof DefaultContainerProperties;
                         return (
                           <Box key={pos} sx={{ width: "25%" }}>
-                            <Typography variant="caption" sx={{ fontSize: "10px", color: "white" }}>{pos}</Typography>
+                            <Typography variant="caption" sx={{ fontSize: "0.75rem", color: alpha("#ffffff", 0.7) }}>
+                              {pos}
+                            </Typography>
                             <Slider
                               value={parseInt(String(properties[key] || "0px").replace("px", ""), 10) || 0}
                               onChange={(_, value) => handleChange(key, `${value}px`)}
@@ -237,11 +304,11 @@ export const ContainerProperties: React.FC<ContainerPropertiesProps> = ({ proper
                               valueLabelDisplay="auto"
                               size={size}
                               sx={{
-                                color: "white",
-                                "& .MuiSlider-thumb": { bgcolor: "white", width: 12, height: 12 },
-                                "& .MuiSlider-track": { bgcolor: "white", height: 4 },
-                                "& .MuiSlider-rail": { bgcolor: "#4a5568", height: 4 }, // gray-700
-                                "& .MuiSlider-valueLabel": { fontSize: "10px" },
+                                color: "#6366f1",
+                                "& .MuiSlider-thumb": { bgcolor: "#6366f1", width: 10, height: 10 },
+                                "& .MuiSlider-track": { bgcolor: "#6366f1", height: 3 },
+                                "& .MuiSlider-rail": { bgcolor: alpha("#6366f1", 0.3), height: 3 },
+                                "& .MuiSlider-valueLabel": { fontSize: "0.75rem", bgcolor: alpha("#1e1e38", 0.9) },
                               }}
                             />
                           </Box>
@@ -253,12 +320,14 @@ export const ContainerProperties: React.FC<ContainerPropertiesProps> = ({ proper
 
                 {/* Decoration */}
                 {section.details.includes("borderColor") && (
-                  <Box display="flex" alignItems="center" gap={0.5}>
-                    <Typography variant="caption" sx={{ minWidth: 80, color: "white", fontSize: "10px" }}>Border Color</Typography>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Typography variant="caption" sx={{ minWidth: 80, color: alpha("#ffffff", 0.7), fontSize: "0.75rem" }}>
+                      Border Color
+                    </Typography>
                     <TextField
                       value={properties.borderColor || "#000000"}
                       onChange={(e) => handleChange("borderColor", e.target.value)}
-                      variant="standard"
+                      variant="outlined"
                       size={size}
                       InputProps={{
                         startAdornment: (
@@ -273,111 +342,154 @@ export const ContainerProperties: React.FC<ContainerPropertiesProps> = ({ proper
                         ),
                       }}
                       sx={{
-                        "& .MuiInputBase-input": { color: "white", fontSize: "10px" },
-                        "& .MuiInputLabel-root": { color: "white", fontSize: "10px" },
-                        "& .MuiInputLabel-root.Mui-focused": { color: "white", fontSize: "10px" },
-                        "& .MuiInput-underline:before": { borderBottomColor: "white" },
-                        "& .MuiInput-underline:after": { borderBottomColor: "white" },
-                        "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottomColor: "white" },
-                        height: "24px",
+                        "& .MuiInputBase-input": { color: "#ffffff", fontSize: "0.75rem" },
+                        "& .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.3) },
+                        "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.5) },
+                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#6366f1" },
+                        backgroundColor: alpha("#1e1e38", 0.5),
+                        borderRadius: "4px",
+                        height: "32px",
                       }}
                     />
                   </Box>
                 )}
                 {section.details.includes("borderWidth") && (
-                  <Box display="flex" alignItems="center" gap={0.5}>
-                    <Typography variant="caption" sx={{ minWidth: 80, color: "white", fontSize: "10px" }}>Border Width</Typography>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Typography variant="caption" sx={{ minWidth: 80, color: alpha("#ffffff", 0.7), fontSize: "0.75rem" }}>
+                      Border Width
+                    </Typography>
                     <TextField
                       type="number"
                       value={parseInt(properties.borderWidth || "0", 10)}
                       onChange={(e) => handleChange("borderWidth", `${e.target.value}px`)}
-                      variant="standard"
+                      variant="outlined"
                       size={size}
                       sx={{
-                        "& .MuiInputBase-input": { color: "white", fontSize: "10px" },
-                        "& .MuiInputLabel-root": { color: "white", fontSize: "10px" },
-                        "& .MuiInputLabel-root.Mui-focused": { color: "white", fontSize: "10px" },
-                        "& .MuiInput-underline:before": { borderBottomColor: "white" },
-                        "& .MuiInput-underline:after": { borderBottomColor: "white" },
-                        "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottomColor: "white" },
-                        height: "24px",
+                        "& .MuiInputBase-input": { color: "#ffffff", fontSize: "0.75rem" },
+                        "& .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.3) },
+                        "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.5) },
+                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#6366f1" },
+                        backgroundColor: alpha("#1e1e38", 0.5),
+                        borderRadius: "4px",
+                        height: "32px",
                       }}
                     />
                   </Box>
                 )}
                 {section.details.includes("borderRadius") && (
-                  <Box display="flex" alignItems="center" gap={0.5}>
-                    <Typography variant="caption" sx={{ minWidth: 80, color: "white", fontSize: "10px" }}>Border Radius</Typography>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Typography variant="caption" sx={{ minWidth: 80, color: alpha("#ffffff", 0.7), fontSize: "0.75rem" }}>
+                      Border Radius
+                    </Typography>
                     <TextField
                       type="number"
                       value={parseInt(properties.borderRadius || "0", 10)}
                       onChange={(e) => handleChange("borderRadius", `${e.target.value}px`)}
-                      variant="standard"
+                      variant="outlined"
                       size={size}
                       sx={{
-                        "& .MuiInputBase-input": { color: "white", fontSize: "10px" },
-                        "& .MuiInputLabel-root": { color: "white", fontSize: "10px" },
-                        "& .MuiInputLabel-root.Mui-focused": { color: "white", fontSize: "10px" },
-                        "& .MuiInput-underline:before": { borderBottomColor: "white" },
-                        "& .MuiInput-underline:after": { borderBottomColor: "white" },
-                        "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottomColor: "white" },
-                        height: "24px",
+                        "& .MuiInputBase-input": { color: "#ffffff", fontSize: "0.75rem" },
+                        "& .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.3) },
+                        "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.5) },
+                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#6366f1" },
+                        backgroundColor: alpha("#1e1e38", 0.5),
+                        borderRadius: "4px",
+                        height: "32px",
                       }}
                     />
                   </Box>
                 )}
                 {section.details.includes("borderStyle") && (
                   <Box>
-                    <Typography variant="caption" sx={{ color: "white", fontSize: "10px", mb: 0.25 }}>Border Style</Typography>
+                    <Typography variant="caption" sx={{ color: alpha("#ffffff", 0.7), fontSize: "0.75rem", mb: 0.5 }}>
+                      Border Style
+                    </Typography>
                     <RadioGroup
                       row
                       value={properties.borderStyle || "solid"}
                       onChange={(e) => handleChange("borderStyle", e.target.value)}
-                      sx={{ color: "white" }}
+                      sx={{ color: "white", gap: 0.5 }}
                     >
-                      <FormControlLabel value="solid" control={<Radio sx={{ color: "white" }} size="small" />} label={<Typography variant="caption" sx={{ fontSize: "10px" }}>Solid</Typography>} />
-                      <FormControlLabel value="dashed" control={<Radio sx={{ color: "white" }} size="small" />} label={<Typography variant="caption" sx={{ fontSize: "10px" }}>Dashed</Typography>} />
-                      <FormControlLabel value="dotted" control={<Radio sx={{ color: "white" }} size="small" />} label={<Typography variant="caption" sx={{ fontSize: "10px" }}>Dotted</Typography>} />
-                      <FormControlLabel value="none" control={<Radio sx={{ color: "white" }} size="small" />} label={<Typography variant="caption" sx={{ fontSize: "10px" }}>None</Typography>} />
+                      <FormControlLabel
+                        value="solid"
+                        control={<Radio sx={{ color: alpha("#6366f1", 0.7), "&.Mui-checked": { color: "#6366f1" } }} size="small" />}
+                        label={<Typography variant="caption" sx={{ fontSize: "0.75rem", color: alpha("#ffffff", 0.7) }}>Solid</Typography>}
+                      />
+                      <FormControlLabel
+                        value="dashed"
+                        control={<Radio sx={{ color: alpha("#6366f1", 0.7), "&.Mui-checked": { color: "#6366f1" } }} size="small" />}
+                        label={<Typography variant="caption" sx={{ fontSize: "0.75rem", color: alpha("#ffffff", 0.7) }}>Dashed</Typography>}
+                      />
+                      <FormControlLabel
+                        value="dotted"
+                        control={<Radio sx={{ color: alpha("#6366f1", 0.7), "&.Mui-checked": { color: "#6366f1" } }} size="small" />}
+                        label={<Typography variant="caption" sx={{ fontSize: "0.75rem", color: alpha("#ffffff", 0.7) }}>Dotted</Typography>}
+                      />
+                      <FormControlLabel
+                        value="none"
+                        control={<Radio sx={{ color: alpha("#6366f1", 0.7), "&.Mui-checked": { color: "#6366f1" } }} size="small" />}
+                        label={<Typography variant="caption" sx={{ fontSize: "0.75rem", color: alpha("#ffffff", 0.7) }}>None</Typography>}
+                      />
                     </RadioGroup>
                   </Box>
                 )}
                 {section.details.includes("boxShadow") && (
-                  <Box display="flex" flexDirection="column" gap={0.5}>
-                    <Box display="flex" alignItems="center" gap={0.5}>
-                      <Typography variant="caption" sx={{ minWidth: 80, color: "white", fontSize: "10px" }}>Box Shadow</Typography>
+                  <Box display="flex" flexDirection="column" gap={1}>
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Typography variant="caption" sx={{ minWidth: 80, color: alpha("#ffffff", 0.7), fontSize: "0.75rem" }}>
+                        Box Shadow
+                      </Typography>
                       <TextField
                         value={properties.boxShadow || ""}
                         onChange={(e) => handleChange("boxShadow", e.target.value)}
-                        variant="standard"
+                        variant="outlined"
                         size={size}
                         sx={{
-                          "& .MuiInputBase-input": { color: "white", fontSize: "10px" },
-                          "& .MuiInputLabel-root": { color: "white", fontSize: "10px" },
-                          "& .MuiInputLabel-root.Mui-focused": { color: "white", fontSize: "10px" },
-                          "& .MuiInput-underline:before": { borderBottomColor: "white" },
-                          "& .MuiInput-underline:after": { borderBottomColor: "white" },
-                          "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottomColor: "white" },
-                          height: "24px",
+                          "& .MuiInputBase-input": { color: "#ffffff", fontSize: "0.75rem" },
+                          "& .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.3) },
+                          "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.5) },
+                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#6366f1" },
+                          backgroundColor: alpha("#1e1e38", 0.5),
+                          borderRadius: "4px",
+                          height: "32px",
                         }}
                       />
                     </Box>
                   </Box>
                 )}
 
+                {/* Overflow */}
                 {section.details.includes("overflow") && (
                   <Box>
-                    <Typography variant="caption" sx={{ color: "white", fontSize: "10px", mb: 0.25 }}>Overflow</Typography>
+                    <Typography variant="caption" sx={{ color: alpha("#ffffff", 0.7), fontSize: "0.75rem", mb: 0.5 }}>
+                      Overflow
+                    </Typography>
                     <RadioGroup
                       row
                       value={properties.overflow || "visible"}
                       onChange={(e) => handleChange("overflow", e.target.value)}
-                      sx={{ color: "white" }}
+                      sx={{ color: "white", gap: 0.5 }}
                     >
-                      <FormControlLabel value="visible" control={<Radio sx={{ color: "white" }} size="small" />} label={<Typography variant="caption" sx={{ fontSize: "10px" }}>Visible</Typography>} />
-                      <FormControlLabel value="hidden" control={<Radio sx={{ color: "white" }} size="small" />} label={<Typography variant="caption" sx={{ fontSize: "10px" }}>Hidden</Typography>} />
-                      <FormControlLabel value="scroll" control={<Radio sx={{ color: "white" }} size="small" />} label={<Typography variant="caption" sx={{ fontSize: "10px" }}>Scroll</Typography>} />
-                      <FormControlLabel value="auto" control={<Radio sx={{ color: "white" }} size="small" />} label={<Typography variant="caption" sx={{ fontSize: "10px" }}>Auto</Typography>} />
+                      <FormControlLabel
+                        value="visible"
+                        control={<Radio sx={{ color: alpha("#6366f1", 0.7), "&.Mui-checked": { color: "#6366f1" } }} size="small" />}
+                        label={<Typography variant="caption" sx={{ fontSize: "0.75rem", color: alpha("#ffffff", 0.7) }}>Visible</Typography>}
+                      />
+                      <FormControlLabel
+                        value="hidden"
+                        control={<Radio sx={{ color: alpha("#6366f1", 0.7), "&.Mui-checked": { color: "#6366f1" } }} size="small" />}
+                        label={<Typography variant="caption" sx={{ fontSize: "0.75rem", color: alpha("#ffffff", 0.7) }}>Hidden</Typography>}
+                      />
+                      <FormControlLabel
+                        value="scroll"
+                        control={<Radio sx={{ color: alpha("#6366f1", 0.7), "&.Mui-checked": { color: "#6366f1" } }} size="small" />}
+                        label={<Typography variant="caption" sx={{ fontSize: "0.75rem", color: alpha("#ffffff", 0.7) }}>Scroll</Typography>}
+                      />
+                      <FormControlLabel
+                        value="auto"
+                        control={<Radio sx={{ color: alpha("#6366f1", 0.7), "&.Mui-checked": { color: "#6366f1" } }} size="small" />}
+                        label={<Typography variant="caption" sx={{ fontSize: "0.75rem", color: alpha("#ffffff", 0.7) }}>Auto</Typography>}
+                      />
                     </RadioGroup>
                   </Box>
                 )}

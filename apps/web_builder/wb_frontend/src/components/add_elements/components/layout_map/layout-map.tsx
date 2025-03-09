@@ -13,7 +13,8 @@ import { VideoPlayerLayout } from '../element_layout';
 import { RadioLayout } from '../element_layout/radio/radio-layout';
 import { GridLayout } from '../element_layout/grid/grid-layout';
 import { CheckboxLayout } from '../element_layout/checkbox/checkbox-layout';
-
+import { Column } from '../element_layout';
+import { ColumnIcon } from '../element_layout';
 export const componentMap = {
   ContainerLayout,
   DeviceMockup,
@@ -30,4 +31,6 @@ export const componentMap = {
   GridLayout,
   CheckboxLayout,
   RowLayout ,
+  Column,
+  ColumnIcon,
 };

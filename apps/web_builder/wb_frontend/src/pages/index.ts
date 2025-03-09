@@ -9,3 +9,4 @@ export * from './new_app';
 export * from './page_not_found';
 export * from './register_page';
 export * from './user_profile_page';
+export * from './view_project';

@@ -1,1 +1,0 @@
-export *from './render-from-json';

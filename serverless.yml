@@ -150,7 +150,7 @@ functions:
           cors: true 
   #R
   get-pages:
-    handler: apps/web_builder/wb_backend/wb_serverless/wb_api_get_pages/src/handler.getPages
+    handler: apps/web_builder/wb_backend/wb_serverless/wb_api_get_pages/src/handler.getPagesWithProject
     events:
       - http:
           path: projects/{alias}
@@ -199,7 +199,14 @@ functions:
       - http:
           path: delete-layout
           method: delete
-          cors: true        
+          cors: true      
+  upload-image:
+    handler: apps/web_builder/wb_backend/wb_serverless/wb_api_upload_image/src/handler.UploadImage
+    events:
+      - http:
+          path: upload-image
+          method: post
+          cors: true         
 #   move-project:
 #     handler: apps/web_builder/wb_backend/wb_serverless/wb_api_project_context_menu/src/handler.moveProject
 #     events:

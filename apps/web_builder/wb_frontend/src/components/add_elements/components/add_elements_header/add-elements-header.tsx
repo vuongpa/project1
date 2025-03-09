@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useEditor } from "@craftjs/core";
-import { ExportFileJson } from "../export_file/export-file-json"; // Đảm bảo đường dẫn đúng
+import { SavePage } from "../save_page/save-page-json";
 import { DeviceMockup } from "../main_element";
 import UndoIcon from "@mui/icons-material/Undo";
 import RedoIcon from "@mui/icons-material/Redo";
@@ -12,13 +12,33 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ErrorIcon from "@mui/icons-material/Error";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import SearchIcon from "@mui/icons-material/Search";
-import AndroidIcon from "@mui/icons-material/Android";
-import { IconButton, TextField } from "@mui/material";
+import GridViewIcon from "@mui/icons-material/GridView";
+import { IconButton, TextField, Tooltip, Box, Button, Typography, Divider, Chip, Badge, Avatar } from "@mui/material";
+import { alpha } from "@mui/material/styles";
+import { PreviewDialog } from "../preview_user/panel";
+
+const headerStyle = {
+  borderBottom: "1px solid rgba(79, 70, 229, 0.3)",
+  background: "linear-gradient(to right, #1e1e38, #2a2a44)",
+  minHeight: "3.5rem",
+  display: "flex",
+  flexWrap: "wrap",
+  alignItems: "center",
+  justifyContent: "space-between",
+  px: { xs: 1.5, sm: 2.5 },
+  color: "white",
+  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+};
 
 export const AddElementsHeader: React.FC = React.memo(() => {
   const { actions, query } = useEditor();
-  const [projectName, setProjectName] = useState<string>("Project Name");
-  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [title, setTitle] = useState<string>("My Project");
+  const [alias, setAlias] = useState<string>("my-project");
+  const [metaTag, setMetaTag] = useState<string>("web, page, builder");
+  const [isEditingTitle, setIsEditingTitle] = useState<boolean>(false);
+  const [isEditingAlias, setIsEditingAlias] = useState<boolean>(false);
+  const [isEditingMeta, setIsEditingMeta] = useState<boolean>(false);
+  const [openPreviewDialog, setOpenPreviewDialog] = useState<boolean>(false);
 
   const { deviceName, deviceSize } = useEditor((state) => {
     let width = "100%";
@@ -34,9 +54,9 @@ export const AddElementsHeader: React.FC = React.memo(() => {
       }
     }
     const widthNum = parseInt(width.replace(/[^\d]/g, ""), 10) || 375;
-    if (widthNum >= 600 && widthNum < 1024) {
+    if (widthNum >= 600 && widthNum < 824) {
       name = "📱 Tablet";
-    } else if (widthNum >= 1024) {
+    } else if (widthNum >= 824) {
       name = "💻 Desktop";
     }
 
@@ -99,141 +119,415 @@ export const AddElementsHeader: React.FC = React.memo(() => {
   const isTablet = deviceName.includes("Tablet");
   const isDesktop = deviceName.includes("Desktop");
 
-  const handleEditClick = () => {
-    setIsEditing(true);
+  const handleEditTitleClick = () => setIsEditingTitle(true);
+  const handleEditAliasClick = () => setIsEditingAlias(true);
+  const handleEditMetaClick = () => setIsEditingMeta(true);
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value);
+  const handleAliasChange = (e: React.ChangeEvent<HTMLInputElement>) => setAlias(e.target.value);
+  const handleMetaChange = (e: React.ChangeEvent<HTMLInputElement>) => setMetaTag(e.target.value);
+
+  const handleTitleBlur = () => {
+    setIsEditingTitle(false);
+    if (!title.trim()) setTitle("Project Title");
   };
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setProjectName(e.target.value);
+  const handleAliasBlur = () => {
+    setIsEditingAlias(false);
+    if (!alias.trim()) setAlias("project-alias");
   };
 
-  const handleNameBlur = () => {
-    setIsEditing(false);
-    if (!projectName.trim()) {
-      setProjectName("Project Name");
+  const handleMetaBlur = () => {
+    setIsEditingMeta(false);
+    if (!metaTag.trim()) setMetaTag("meta description");
+  };
+
+  const handlePreviewOpen = () => {
+    setOpenPreviewDialog(true);
+  };
+
+  const handlePreviewClose = () => {
+    setOpenPreviewDialog(false);
+  };
+
+  const handlePreviewPublish = (selectedDomain: string) => {
+    const jsonData = query.serialize();
+    if (jsonData && selectedDomain && selectedDomain !== "not-published" && selectedDomain !== "custom") {
+      const baseUrl = `https://${selectedDomain}/preview?layout=${encodeURIComponent(jsonData)}`;
+      window.open(baseUrl, "_blank"); 
+    } else if (selectedDomain === "custom") {
+      console.log("Vui lòng thêm custom domain trước khi preview!");
     }
   };
 
   return (
-    <header className="border border-gray-700 bg-slate-900 min-h-[3rem] flex flex-wrap items-center justify-between px-2 sm:px-4 md:px-6 text-white shadow-md">
-      <div className="flex items-center space-x-2 flex-shrink-0">
-        {isEditing ? (
-          <TextField
-            value={projectName}
-            onChange={handleNameChange}
-            onBlur={handleNameBlur}
-            autoFocus
+    <Box sx={headerStyle}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
+        <Avatar sx={{ bgcolor: alpha("#6366f1", 0.9), width: 32, height: 32, fontSize: "1rem", fontWeight: "bold" }}>
+          TT
+        </Avatar>
+
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          {isEditingTitle ? (
+            <TextField
+              value={title}
+              onChange={handleTitleChange}
+              onBlur={handleTitleBlur}
+              autoFocus
+              size="small"
+              sx={{
+                input: { color: "#ffffff", fontSize: "0.95rem", fontWeight: 500 },
+                "& .MuiInputBase-root": {
+                  bgcolor: alpha("#1e1e38", 0.5),
+                  borderRadius: "6px",
+                  transition: "all 0.2s ease",
+                  "&:hover": { bgcolor: alpha("#1e1e38", 0.7) },
+                },
+                "& .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.5) },
+                "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#6366f1",
+                  borderWidth: "2px",
+                },
+              }}
+            />
+          ) : (
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, letterSpacing: "0.01em" }}>
+                {title}
+              </Typography>
+              <Tooltip title="Edit title" placement="top" arrow>
+                <IconButton
+                  onClick={handleEditTitleClick}
+                  sx={{
+                    color: alpha("#ffffff", 0.8),
+                    "&:hover": { bgcolor: alpha("#6366f1", 0.15), color: "#ffffff" },
+                    p: 0.5,
+                    ml: 0.5,
+                  }}
+                  size="small"
+                >
+                  <EditIcon fontSize="small" sx={{ fontSize: "0.85rem" }} />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          )}
+        </Box>
+
+        <Divider orientation="vertical" flexItem sx={{ bgcolor: alpha("#6366f1", 0.3), mx: 1, height: "24px", my: "auto" }} />
+
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          {isEditingAlias ? (
+            <TextField
+              value={alias}
+              onChange={handleAliasChange}
+              onBlur={handleAliasBlur}
+              autoFocus
+              size="small"
+              sx={{
+                input: { color: "#ffffff", fontSize: "0.85rem" },
+                "& .MuiInputBase-root": {
+                  bgcolor: alpha("#1e1e38", 0.5),
+                  borderRadius: "6px",
+                  transition: "all 0.2s ease",
+                  "&:hover": { bgcolor: alpha("#1e1e38", 0.7) },
+                },
+                "& .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.5) },
+                "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#6366f1",
+                  borderWidth: "2px",
+                },
+              }}
+            />
+          ) : (
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Chip
+                label={alias}
+                size="small"
+                sx={{
+                  bgcolor: alpha("#1e1e38", 0.5),
+                  color: alpha("#ffffff", 0.85),
+                  fontSize: "0.75rem",
+                  fontWeight: 500,
+                  height: "22px",
+                  "& .MuiChip-label": { px: 1 },
+                }}
+              />
+              <Tooltip title="Edit alias" placement="top" arrow>
+                <IconButton
+                  onClick={handleEditAliasClick}
+                  sx={{
+                    color: alpha("#ffffff", 0.8),
+                    "&:hover": { bgcolor: alpha("#6366f1", 0.15), color: "#ffffff" },
+                    p: 0.5,
+                    ml: 0.5,
+                  }}
+                  size="small"
+                >
+                  <EditIcon fontSize="small" sx={{ fontSize: "0.8rem" }} />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          )}
+        </Box>
+
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          {isEditingMeta ? (
+            <TextField
+              value={metaTag}
+              onChange={handleMetaChange}
+              onBlur={handleMetaBlur}
+              autoFocus
+              size="small"
+              sx={{
+                input: { color: "#ffffff", fontSize: "0.85rem" },
+                "& .MuiInputBase-root": {
+                  bgcolor: alpha("#1e1e38", 0.5),
+                  borderRadius: "6px",
+                  transition: "all 0.2s ease",
+                  "&:hover": { bgcolor: alpha("#1e1e38", 0.7) },
+                },
+                "& .MuiOutlinedInput-notchedOutline": { borderColor: alpha("#6366f1", 0.5) },
+                "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#6366f1",
+                  borderWidth: "2px",
+                },
+              }}
+            />
+          ) : (
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: alpha("#ffffff", 0.7),
+                  fontSize: "0.75rem",
+                  bgcolor: alpha("#1e1e38", 0.3),
+                  px: 1,
+                  py: 0.25,
+                  borderRadius: "4px",
+                }}
+              >
+                {metaTag}
+              </Typography>
+              <Tooltip title="Edit meta tags" placement="top" arrow>
+                <IconButton
+                  onClick={handleEditMetaClick}
+                  sx={{
+                    color: alpha("#ffffff", 0.8),
+                    "&:hover": { bgcolor: alpha("#6366f1", 0.15), color: "#ffffff" },
+                    p: 0.5,
+                    ml: 0.5,
+                  }}
+                  size="small"
+                >
+                  <EditIcon fontSize="small" sx={{ fontSize: "0.8rem" }} />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          )}
+        </Box>
+      </Box>
+
+      <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1, sm: 2 }, flexWrap: "wrap", justifyContent: "center", mx: 2 }}>
+        <Chip
+          label={`${deviceName.replace(/^\W+/, '')} - ${deviceSize}`}
+          variant="outlined"
+          size="small"
+          sx={{
+            borderColor: alpha("#6366f1", 0.3),
+            color: alpha("#ffffff", 0.85),
+            bgcolor: alpha("#1e1e38", 0.3),
+            fontSize: "0.75rem",
+            "& .MuiChip-label": { px: 1 },
+          }}
+        />
+
+        <Box sx={{ display: "flex", alignItems: "center", bgcolor: alpha("#1e1e38", 0.3), borderRadius: "6px", p: 0.5 }}>
+          <Tooltip title="Smartphone View" arrow placement="top">
+            <IconButton
+              onClick={() => handleDeviceClick("smartphone")}
+              sx={{
+                color: isSmartphone ? "#6366f1" : alpha("#ffffff", 0.6),
+                bgcolor: isSmartphone ? alpha("#ffffff", 0.15) : "transparent",
+                "&:hover": {
+                  bgcolor: isSmartphone ? alpha("#ffffff", 0.2) : alpha("#ffffff", 0.08),
+                  color: isSmartphone ? "#6366f1" : "#ffffff",
+                },
+                p: 0.75,
+                mx: 0.25,
+                transition: "all 0.2s ease",
+              }}
+              size="small"
+              aria-label="Smartphone"
+            >
+              <SmartphoneIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Tablet View" arrow placement="top">
+            <IconButton
+              onClick={() => handleDeviceClick("tablet")}
+              sx={{
+                color: isTablet ? "#6366f1" : alpha("#ffffff", 0.6),
+                bgcolor: isTablet ? alpha("#ffffff", 0.15) : "transparent",
+                "&:hover": {
+                  bgcolor: isTablet ? alpha("#ffffff", 0.2) : alpha("#ffffff", 0.08),
+                  color: isTablet ? "#6366f1" : "#ffffff",
+                },
+                p: 0.75,
+                mx: 0.25,
+                transition: "all 0.2s ease",
+              }}
+              size="small"
+              aria-label="Tablet"
+            >
+              <TabletIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Desktop View" arrow placement="top">
+            <IconButton
+              onClick={() => handleDeviceClick("desktop")}
+              sx={{
+                color: isDesktop ? "#6366f1" : alpha("#ffffff", 0.6),
+                bgcolor: isDesktop ? alpha("#ffffff", 0.15) : "transparent",
+                "&:hover": {
+                  bgcolor: isDesktop ? alpha("#ffffff", 0.2) : alpha("#ffffff", 0.08),
+                  color: isDesktop ? "#6366f1" : "#ffffff",
+                },
+                p: 0.75,
+                mx: 0.25,
+                transition: "all 0.2s ease",
+              }}
+              size="small"
+              aria-label="Desktop"
+            >
+              <DesktopWindowsIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+
+        <Button
+          variant="text"
+          startIcon={<GridViewIcon />}
+          endIcon={<KeyboardArrowDownIcon />}
+          size="small"
+          sx={{
+            color: alpha("#ffffff", 0.85),
+            textTransform: "none",
+            fontSize: "0.85rem",
+            bgcolor: alpha("#1e1e38", 0.3),
+            borderRadius: "6px",
+            px: 1.5,
+            py: 0.5,
+            "&:hover": { bgcolor: alpha("#1e1e38", 0.5) },
+          }}
+        >
+          Grids
+        </Button>
+
+        <Box sx={{ display: "flex", alignItems: "center", bgcolor: alpha("#1e1e38", 0.3), borderRadius: "6px", p: 0.5 }}>
+          <Tooltip title={canUndo ? "Undo" : "Nothing to undo"} arrow placement="top">
+            <span>
+              <IconButton
+                onClick={handleUndo}
+                disabled={!canUndo}
+                sx={{
+                  color: canUndo ? alpha("#ffffff", 0.8) : alpha("#ffffff", 0.3),
+                  "&:hover": { bgcolor: alpha("#ffffff", 0.08), color: "#ffffff" },
+                  "&.Mui-disabled": { color: alpha("#ffffff", 0.3) },
+                  p: 0.75,
+                  mx: 0.25,
+                }}
+                size="small"
+                aria-label="Undo"
+              >
+                <UndoIcon fontSize="small" />
+              </IconButton>
+            </span>
+          </Tooltip>
+
+          <Tooltip title={canRedo ? "Redo" : "Nothing to redo"} arrow placement="top">
+            <span>
+              <IconButton
+                onClick={handleRedo}
+                disabled={!canRedo}
+                sx={{
+                  color: canRedo ? alpha("#ffffff", 0.8) : alpha("#ffffff", 0.3),
+                  "&:hover": { bgcolor: alpha("#ffffff", 0.08), color: "#ffffff" },
+                  "&.Mui-disabled": { color: alpha("#ffffff", 0.3) },
+                  p: 0.75,
+                  mx: 0.25,
+                }}
+                size="small"
+                aria-label="Redo"
+              >
+                <RedoIcon fontSize="small" />
+              </IconButton>
+            </span>
+          </Tooltip>
+
+          <Tooltip title="Validation Issues" arrow placement="top">
+            <IconButton
+              sx={{
+                color: alpha("#ffffff", 0.8),
+                "&:hover": { bgcolor: alpha("#ffffff", 0.08), color: "#ffffff" },
+                p: 0.75,
+                mx: 0.25,
+              }}
+              size="small"
+            >
+              <Badge badgeContent={0} color="error" sx={{ "& .MuiBadge-badge": { minWidth: "14px", height: "14px", fontSize: "0.6rem" } }}>
+                <ErrorIcon fontSize="small" />
+              </Badge>
+            </IconButton>
+          </Tooltip>
+        </Box>
+      </Box>
+
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexShrink: 0 }}>
+        <Tooltip title="Search" arrow placement="top">
+          <IconButton
+            sx={{
+              color: alpha("#ffffff", 0.8),
+              "&:hover": { bgcolor: alpha("#6366f1", 0.15), color: "#ffffff" },
+              p: 1,
+            }}
+            size="small"
+          >
+            <SearchIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+
+        <SavePage title={title} alias={alias} metaTags={metaTag} />
+
+        <Tooltip title="Preview" arrow placement="top">
+          <Button
+            variant="contained"
+            startIcon={<VisibilityIcon />}
+            onClick={handlePreviewOpen}
             size="small"
             sx={{
-              input: { color: "white", fontSize: "0.875rem" },
-              "& .MuiInputBase-root": {
-                backgroundColor: "#2d3748",
-                borderRadius: "4px",
+              bgcolor: "#6366f1",
+              textTransform: "none",
+              fontWeight: 500,
+              boxShadow: "0 2px 8px rgba(99, 102, 241, 0.3)",
+              "&:hover": {
+                bgcolor: "#4f46e5",
+                boxShadow: "0 4px 12px rgba(99, 102, 241, 0.4)",
               },
-              "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#4a5568",
-              },
+              p: "6px 12px",
             }}
-          />
-        ) : (
-          <>
-            <span className="text-sm sm:text-base md:text-lg font-medium">{projectName}</span>
-            <IconButton
-              onClick={handleEditClick}
-              sx={{ color: "white", "&:hover": { backgroundColor: "#2a4365" }, padding: "4px" }}
-            >
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </>
-        )}
-      </div>
-      <div className="flex items-center space-x-4 sm:space-x-6 flex-wrap justify-center flex-grow">
-        <span className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-400">{`${deviceName.replace(/^\W+/, '')} - ${deviceSize}`}</span>
-        <div className="flex items-center space-x-2">
-          <IconButton
-            onClick={() => handleDeviceClick("smartphone")}
-            sx={{
-              color: isSmartphone ? "white" : "#9ca3af",
-              "&:hover": { backgroundColor: "#2a4365" },
-              padding: "4px",
-            }}
-            aria-label="Smartphone"
           >
-            <SmartphoneIcon fontSize="small" />
-          </IconButton>
-          <IconButton
-            onClick={() => handleDeviceClick("tablet")}
-            sx={{
-              color: isTablet ? "white" : "#9ca3af",
-              "&:hover": { backgroundColor: "#2a4365" },
-              padding: "4px",
-            }}
-            aria-label="Tablet"
-          >
-            <TabletIcon fontSize="small" />
-          </IconButton>
-          <IconButton
-            onClick={() => handleDeviceClick("desktop")}
-            sx={{
-              color: isDesktop ? "white" : "#9ca3af",
-              "&:hover": { backgroundColor: "#2a4365" },
-              padding: "4px",
-            }}
-            aria-label="Desktop"
-          >
-            <DesktopWindowsIcon fontSize="small" />
-          </IconButton>
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-sm sm:text-base md:text-lg">Grids</span>
-          <IconButton className="hover:text-white" sx={{ color: "white", "&:hover": { backgroundColor: "#2a4365" }, padding: "4px" }}>
-            <KeyboardArrowDownIcon fontSize="small" />
-          </IconButton>
-        </div>
-        <div className="flex items-center space-x-2">
-          <IconButton
-            onClick={handleUndo}
-            disabled={!canUndo}
-            sx={{
-              color: "white",
-              "&:hover": { backgroundColor: "#2a4365" },
-              "&.Mui-disabled": { color: "#6b7280" },
-              padding: "4px",
-            }}
-            aria-label="Undo"
-          >
-            <UndoIcon fontSize="small" />
-          </IconButton>
-          <IconButton
-            onClick={handleRedo}
-            disabled={!canRedo}
-            sx={{
-              color: "white",
-              "&:hover": { backgroundColor: "#2a4365" },
-              "&.Mui-disabled": { color: "#6b7280" },
-              padding: "4px",
-            }}
-            aria-label="Redo"
-          >
-            <RedoIcon fontSize="small" />
-          </IconButton>
-          <IconButton className="hover:text-white" sx={{ color: "white", "&:hover": { backgroundColor: "#2a4365" }, padding: "4px" }}>
-            <ErrorIcon fontSize="small" />
-          </IconButton>
-          <IconButton className="hover:text-white" sx={{ color: "white", "&:hover": { backgroundColor: "#2a4365" }, padding: "4px" }}>
-            <VisibilityIcon fontSize="small" />
-          </IconButton>
-        </div>
-      </div>
-      <div className="flex items-center space-x-2 flex-shrink-0">
-        <IconButton className="hover:text-white" sx={{ color: "white", "&:hover": { backgroundColor: "#2a4365" }, padding: "4px" }}>
-          <SearchIcon fontSize="small" />
-        </IconButton>
-        <IconButton className="hover:text-white" sx={{ color: "white", "&:hover": { backgroundColor: "#2a4365" }, padding: "4px" }}>
-          <AndroidIcon fontSize="small" />
-        </IconButton>
-        <ExportFileJson projectName={projectName} />
-      </div>
-    </header>
+            Preview
+          </Button>
+        </Tooltip>
+      </Box>
+
+      <PreviewDialog
+        open={openPreviewDialog}
+        onClose={handlePreviewClose}
+        onPublish={handlePreviewPublish}
+      />
+    </Box>
   );
 });

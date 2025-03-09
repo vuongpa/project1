@@ -6,6 +6,7 @@ import { toast } from "react-hot-toast";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { callPostAPI } from "../../api_utils";
+import { motion } from "framer-motion";
 
 // Define types for form data
 interface IFormInput {
@@ -27,7 +28,7 @@ export const Register = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<IFormInput>({
     resolver: yupResolver(validationSchema),
   });
-  const [loading, setLoading] = React.useState(false);
+  const [_loading, setLoading] = React.useState(false);
 
   const mutation = useMutation({
     mutationFn: async (data: IFormInput) => {
@@ -67,71 +68,65 @@ export const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
-      <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md bg-white shadow-md rounded-lg p-8">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">Register</h1>
+    <motion.div
+      initial={{ opacity: 0, x: -100 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 100 }}
+      transition={{
+        duration: 1,
+        ease: "easeInOut"
+      }}
+    >
 
-        {/* Username Field */}
-        <div className="mb-4">
-          <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-            Username
-          </label>
-          <input
-            type="text"
-            id="username"
-            placeholder="Enter your username"
-            {...register("username")}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200"
-          />
-          {errors.username && <p className="text-red-500 text-sm mt-2">{errors.username.message}</p>}
+      <div className="relative min-h-screen">
+        <img
+          src="/images/header_img/Group 12519.png"
+          alt="Logo"
+          className="absolute top-3 left-3 w-14 h-auto z-50"
+        />
+
+        <div className="flex min-h-screen bg-gray-100">
+          <div className="hidden md:flex w-3/5 bg-gradient-to-tr from-black justify-center items-center relative">
+            <div className="absolute inset-0 bg-black opacity-50"></div>
+            <div className="z-10 text-white text-center w-full h-full flex justify-center items-center">
+              <div className="flex flex-col items-start space-y-8">
+                <div className="flex flex-col items-start space-y-2">
+                  <h1 className="font-extrabold text-6xl text-left">Ranoar <br /> No-Code</h1>
+                  <div className="font-normal text-3xl">A No-code website builder</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex-1 w-full md:w-2/5 flex justify-center items-center p-6 md:p-12">
+            <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md bg-white rounded-lg p-8 shadow-lg min-h-[450px]">
+              <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">Register</h1>
+              <div className="mb-6">
+                <label htmlFor="username" className="block text-sm font-medium text-gray-600 mb-2">Username</label>
+                <input type="text" id="username" {...register("username")} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your username" />
+                {errors.username && <span className="text-red-500 text-sm">{errors.username.message}</span>}
+              </div>
+              <div className="mb-6">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-600 mb-2">Password</label>
+                <input type="password" id="password" {...register("password")} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your password" />
+                {errors.password && <span className="text-red-500 text-sm">{errors.password.message}</span>}
+              </div>
+              <div className="mb-6">
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-600 mb-2">Confirm Password</label>
+                <input type="password" id="confirmPassword" {...register("confirmPassword")} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Confirm your password" />
+                {errors.confirmPassword && <span className="text-red-500 text-sm">{errors.confirmPassword.message}</span>}
+              </div>
+              <button type="submit" className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">Register</button>
+              <p className="text-center text-sm text-gray-500 mt-6">
+                Already have an account?
+                <span className="text-blue-600 hover:underline cursor-pointer" onClick={() => navigate("/auth/login")}>
+                  Login
+                </span>
+              </p>
+            </form>
+          </div>
         </div>
-
-        {/* Password Field */}
-        <div className="mb-4">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            placeholder="Enter your password"
-            {...register("password")}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200"
-          />
-          {errors.password && <p className="text-red-500 text-sm mt-2">{errors.password.message}</p>}
-        </div>
-
-        {/* Confirm Password Field */}
-        <div className="mb-6">
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-            Confirm Password
-          </label>
-          <input
-            type="password"
-            id="confirmPassword"
-            placeholder="Confirm your password"
-            {...register("confirmPassword")}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200"
-          />
-          {errors.confirmPassword && <p className="text-red-500 text-sm mt-2">{errors.confirmPassword.message}</p>}
-        </div>
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white font-bold py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300"
-          disabled={loading}
-        >
-          {loading ? "Registering..." : "Register"}
-        </button>
-
-        <p className="text-center text-sm text-gray-500 mt-4">
-          Already have an account?{" "}
-          <a href="/auth/login" className="text-blue-600 hover:underline">
-            Login
-          </a>
-        </p>
-      </form>
-    </div>
+      </div>
+    </motion.div>
   );
 };

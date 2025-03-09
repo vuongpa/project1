@@ -111,11 +111,9 @@ export const HeadingDefaultProps: HeadingProps = {
   ...getHeadingPropertiesDefaults(),
 };
 HeadingLayout.craft = {
-  displayName: "HeadingComponent",
+  displayName: "HeadingLayout",
   props: HeadingDefaultProps,
   related: {
     toolbar: HeadingProperties,
   },
 };
-
-export default HeadingLayout;

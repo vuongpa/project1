@@ -24,6 +24,7 @@ export const RadioLayout: React.FC<RadioProps> & { craft: any } = (props) => {
   const {
     label = defaultProps.label,
     name = defaultProps.name,
+    value = defaultProps.value, // Thêm value
     checked = defaultProps.checked,
     color = defaultProps.color,
     fontSize = defaultProps.fontSize,
@@ -41,21 +42,20 @@ export const RadioLayout: React.FC<RadioProps> & { craft: any } = (props) => {
     backgroundColor,
     border,
     outline: selected ? "2px solid gray" : "none",
-    cursor: "move", 
-    boxSizing: "border-box",
+    cursor: "move",
+    boxSizing: "border-box" as const,
   };
 
   const labelStyle = {
     color,
     fontSize,
     marginLeft: "8px",
-    userSelect: "none",
+    userSelect: "none" as const,
   };
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     actions.selectNode(id);
-    console.log("RadioLayout selected:", id, "Selected state:", selected);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,11 +73,9 @@ export const RadioLayout: React.FC<RadioProps> & { craft: any } = (props) => {
     setContextMenu(null);
   };
 
-  console.log("Connecting and dragging RadioLayout with ID:", id);
-
   return (
     <div
-      ref={(ref) => connect(drag(ref))} 
+      ref={(ref) => ref && connect(drag(ref))}
       className={`relative cursor-move transition-all ${isHovered || selected ? "border border-dashed border-gray-400" : ""}`}
       onContextMenu={handleContextMenu}
       onClick={handleCloseContextMenu}
@@ -88,6 +86,7 @@ export const RadioLayout: React.FC<RadioProps> & { craft: any } = (props) => {
         <input
           type="radio"
           name={name}
+          value={value} // Thêm value vào input
           checked={checked}
           onChange={handleChange}
           style={{ cursor: "pointer" }}
@@ -98,20 +97,18 @@ export const RadioLayout: React.FC<RadioProps> & { craft: any } = (props) => {
         nodeId={id}
         onClose={handleCloseContextMenu}
         position={contextMenu}
-        onDelete={() => {
-          actions.delete(id);
-        }}
+        onDelete={() => actions.delete(id)}
       />
     </div>
   );
 };
 
 RadioLayout.craft = {
-  displayName: "RadioLayout", 
-  props: getRadioPropertiesDefaults(), 
+  displayName: "RadioLayout",
+  props: getRadioPropertiesDefaults(),
   rules: {
     canDrag: () => true,
-    canDrop: () => true, 
+    canDrop: () => true,
   },
   related: {
     toolbar: RadioProperties,
