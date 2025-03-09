@@ -105,7 +105,7 @@ export const GridLayout: React.FC<GridProps> & { craft: any } = (props) => {
             <Element
               key={index}
               id={`grid-item-${index}`}
-              is="div"
+              is="GridItem"
               canvas
               className="p-4 border border-dashed border-gray-300 text-gray-500 flex items-center justify-center"
             >

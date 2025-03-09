@@ -4,6 +4,7 @@ import { DeleteContextMenu } from '../../../delete_context_menu/delete-context-m
 import { DefaultContainerProperties, getDefaultContainerProperties } from './container-properties';
 import { ContainerProperties } from './properties-container-panel';
 import { Resizer } from '../resizer';
+import { Box } from '@mui/material';
 
 export const ContainerLayout = (props: Partial<DefaultContainerProperties>) => {
   const { selected, id } = useNode((node) => ({
@@ -67,6 +68,7 @@ export const ContainerLayout = (props: Partial<DefaultContainerProperties>) => {
       onContextMenu={handleContextMenu}
       onClick={handleClick}
       propKey={{ width: 'width', height: 'height' }}
+      className='container-layout'
       style={{
         display,
         gap,
@@ -97,9 +99,9 @@ export const ContainerLayout = (props: Partial<DefaultContainerProperties>) => {
         flex: fillSpace === 'yes' ? 1 : 'unset',
         borderWidth,
         borderColor,
-        borderStyle,
+        borderStyle,        
       }}>
-      {children}
+        {children}
       <DeleteContextMenu nodeId={id} onClose={handleCloseContextMenu} position={contextMenu} onDelete={() => {}} />
     </Resizer>
   );

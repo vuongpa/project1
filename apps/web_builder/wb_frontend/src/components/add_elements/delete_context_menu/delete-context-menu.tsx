@@ -50,10 +50,10 @@ export const DeleteContextMenu: React.FC<DeleteContextMenuProps> = ({
         <div
             className="delete-context-menu absolute bg-gray-800 text-white shadow-lg rounded p-2 z-50"
             style={{
-                top: position.y,
-                left: position.x,
                 minWidth: "120px",
-                position: "fixed",
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
             }}
             onClick={(e) => {
                 e.stopPropagation();

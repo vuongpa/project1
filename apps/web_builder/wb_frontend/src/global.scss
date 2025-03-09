@@ -10,3 +10,9 @@ html, body
 {
     height: 100%;
 }
+
+.container-layout > * {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    box-sizing: border-box !important;
+}

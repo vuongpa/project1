@@ -2,7 +2,6 @@ import { useNode } from '@craftjs/core';
 import { ReactNode } from 'react';
 import { Box, Typography } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import ComputerIcon from '@mui/icons-material/Computer';
 
 interface DeviceMockupProps {
   width?: string;
@@ -81,7 +80,13 @@ export const DeviceMockup = ({
             width: '100%',
             display: 'flex',
             flexDirection: 'column',
-            gap: gap,
+            gap,
+            '& > *': {
+              maxWidth: '100% !important',
+              maxHeight: '100% !important',
+              boxSizing: 'border-box !important',
+              position: 'relative',
+            }
           }}
         >
           {children}
@@ -103,4 +108,10 @@ DeviceMockup.craft = {
   rules: {
     canDrop: () => true,
   },
+  custom: {
+    childConstraints: {
+      maxWidth: '100%',
+      maxHeight: '100%',
+    }
+  }
 };
